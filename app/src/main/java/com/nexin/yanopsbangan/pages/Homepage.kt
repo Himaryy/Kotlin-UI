@@ -1,8 +1,11 @@
 package com.nexin.yanopsbangan.pages
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,41 +15,62 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.nexin.yanopsbangan.R
 import com.nexin.yanopsbangan.components.ButtonComponent
 import com.nexin.yanopsbangan.components.CardStat
+import com.nexin.yanopsbangan.utils.ArmyGreen
+import com.nexin.yanopsbangan.utils.ArmyOlive
+import com.nexin.yanopsbangan.utils.BackgroundDark
 import com.nexin.yanopsbangan.utils.Breakpoint
+import com.nexin.yanopsbangan.utils.CardSurface
+import com.nexin.yanopsbangan.utils.HighlightYellow
+import com.nexin.yanopsbangan.utils.MutedForeground
 import com.nexin.yanopsbangan.utils.ScreenInfo
+import com.nexin.yanopsbangan.utils.SuccessGreen
+import com.nexin.yanopsbangan.utils.TextPrimary
 
 @Composable
 fun Homepage(modifier: Modifier = Modifier){
+   var isPumpActive by remember { mutableStateOf(false) }
+
    Column(
       modifier.fillMaxSize()
-         .background(Color(0xFFF4F4F4))
+         .background(BackgroundDark)
 
    ) {
       HeaderSection()
@@ -69,9 +93,25 @@ fun Homepage(modifier: Modifier = Modifier){
             .weight(2f)
             .fillMaxHeight())
 
-//         PanelPump()
-         PanelPump(modifier = Modifier
-            .weight(1f))
+         // Pump Button and Status
+        Column (
+           modifier = Modifier
+              .weight(1f)          // column width in the Row
+              .fillMaxHeight(),    // ⬅️ match height of other panels
+           verticalArrangement = Arrangement.spacedBy(12.dp)
+        ){
+           ButtonComponent(
+              modifier = Modifier
+                 .fillMaxWidth(),
+              isActive = isPumpActive,
+              onClick = {
+                 isPumpActive = !isPumpActive
+              }
+           )
+
+           //Status
+           CardStatus(modifier = Modifier.weight(1f))
+        }
       }
    }
 }
@@ -89,57 +129,155 @@ fun HeaderSection(){
    Box(
       modifier = Modifier.fillMaxWidth()
          .height(180.dp)
-         .background(MaterialTheme.colorScheme.primary),
+         .background(ArmyGreen),
       contentAlignment = Alignment.Center
    ){
-      Text(
-//         text = """
-//               Control dan Monitoring Pengisian Bahan Bakar
-//               Pesawat Udara YANOPSBANGAN TNI AD
-//               """.trimIndent(),
-         text = "PUSPENERBAD AD",
-         style = textStyle,
-         textAlign = TextAlign.Center,
-         color = MaterialTheme.colorScheme.onPrimary,
-      )
-   }
-}
-
-@Composable
-fun PanelController(modifier: Modifier = Modifier){
-   Box(
-      modifier = modifier.fillMaxHeight()
-         .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
-         .padding(16.dp),
-      contentAlignment = Alignment.Center
-
-   ){
-      Column (
-         horizontalAlignment = Alignment.CenterHorizontally
+      Row (
+         verticalAlignment = Alignment.CenterVertically,
+         horizontalArrangement = Arrangement.Center
       ){
-         IconButton(onClick = {}) {
-            Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Up")
-         }
-         Row {
-            IconButton(onClick = { /* ← */ }) {
-               Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Left")
-            }
-            Button (onClick = { /* Center */ }) {
-               Text("○")
-            }
-            IconButton(onClick = { /* → */ }) {
-               Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Right")
-            }
-         }
-         IconButton(onClick = {}) {
-            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Down")
-         }
+         Image(
+            painter = painterResource(id = R.drawable.logo_puspenerbad),
+            contentDescription = "Logo",
+            modifier = Modifier
+               .size(124.dp) // ubah sesuai proporsi
+               .padding(end = 16.dp)
+         )
+
+         Text(
+            text = "PUSPENERBAD AD",
+            fontFamily = FontFamily(
+               Font(R.font.poppins_bold)
+            ),
+            textAlign = TextAlign.Center,
+            color = HighlightYellow,
+            fontSize = 64.sp
+         )
       }
    }
 }
 
 @Composable
-fun PanelMonitoring(modifier: Modifier = Modifier){
+fun PanelController(modifier: Modifier = Modifier) {
+   val btnSize = 96.dp        // 🔹 tombol lebih besar
+   val iconSize = 92.dp       // 🔹 ikon lebih besar (proporsional)
+   val centerSize = 96.dp
+   val arrowPadding = 20.dp    // 🔹 jarak antar tombol
+
+   Box(
+      modifier = modifier
+         .fillMaxHeight()
+         .border(2.dp, ArmyOlive, RoundedCornerShape(8.dp))
+         .background(CardSurface, shape = RoundedCornerShape(8.dp))
+         .padding(16.dp),
+      contentAlignment = Alignment.Center
+   ) {
+      Column(
+         modifier = modifier.fillMaxSize()
+            .padding(16.dp),
+         horizontalAlignment = Alignment.CenterHorizontally,
+         verticalArrangement = Arrangement.Center
+      ) {
+         Text(
+            text = "Crane Control",
+            fontFamily = FontFamily(
+               Font(R.font.poppins_semibold)
+            ),
+            color = HighlightYellow,
+            modifier = Modifier.padding(bottom = 24.dp),
+            fontSize = 28.sp
+         )
+
+         // Controller
+         Box(
+            contentAlignment = Alignment.Center,
+            modifier= modifier.weight(1f)
+               .offset(y = (-45).dp)
+         ) {
+            // Center Button
+            Button(
+               onClick = { /* center */ },
+               modifier = Modifier.size(centerSize).padding(12.dp),
+               shape = CircleShape,
+               border = BorderStroke(2.dp, MutedForeground,),
+               colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+               elevation = ButtonDefaults.buttonElevation(0.dp)
+            ) {
+               Text("○", color = MutedForeground)
+            }
+
+            // Up
+            FilledIconButton (
+               onClick = { /* ↑ */ },
+               modifier = Modifier
+                  .size(btnSize)
+                  .offset(y = (-centerSize / 1.5f - arrowPadding)),
+               shape = RoundedCornerShape(8.dp),
+               colors = IconButtonDefaults.filledIconButtonColors(
+                  containerColor = Color.Transparent,
+                  contentColor = SuccessGreen
+               )
+            ) {
+               Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Up", modifier = Modifier.size(iconSize))
+            }
+
+            // Down
+            FilledIconButton(
+               onClick = { /* ↓ */ },
+               modifier = Modifier
+                  .size(btnSize)
+                  .offset(y = (centerSize / 1.5f + arrowPadding)),
+               shape = RoundedCornerShape(8.dp),
+               colors = IconButtonDefaults.filledIconButtonColors(
+                  containerColor = Color.Transparent,
+                  contentColor = SuccessGreen
+               )
+            ) {
+               Icon(
+                  Icons.Default.KeyboardArrowDown,
+                  contentDescription = "Down",
+                  modifier = Modifier.size(iconSize)
+
+               )
+            }
+
+            // Left
+            FilledIconButton(
+               onClick = { /* ← */ },
+               modifier = Modifier
+                  .size(btnSize)
+                  .offset(x = (-centerSize / 1.5f - arrowPadding)),
+               shape = RoundedCornerShape(8.dp),
+               colors = IconButtonDefaults.filledIconButtonColors(
+                  containerColor = Color.Transparent,
+                  contentColor = SuccessGreen
+               )
+            ) {
+               Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Left", modifier = Modifier.size(iconSize))
+            }
+
+            // Right
+            FilledIconButton(
+               onClick = { /* → */ },
+               modifier = Modifier
+                  .size(btnSize)
+                  .offset(x = (centerSize / 1.5f + arrowPadding)),
+               shape = RoundedCornerShape(8.dp),
+               colors = IconButtonDefaults.filledIconButtonColors(
+                  containerColor = Color.Transparent,
+                  contentColor = SuccessGreen
+               )
+            ) {
+               Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Right", modifier = Modifier.size(iconSize))
+            }
+         }
+      }
+   }
+}
+
+
+@Composable
+fun PanelMonitoring(modifier: Modifier = Modifier) {
    val screenInfo = ScreenInfo()
 
    val textStyle = when (screenInfo.breakpoint){
@@ -150,7 +288,8 @@ fun PanelMonitoring(modifier: Modifier = Modifier){
 
    Column (
       modifier = modifier.fillMaxHeight()
-         .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
+         .border(2.dp, ArmyOlive, RoundedCornerShape(8.dp))
+         .background(CardSurface, shape = RoundedCornerShape(8.dp))
          .padding(16.dp)
    ){
       Column(
@@ -160,10 +299,12 @@ fun PanelMonitoring(modifier: Modifier = Modifier){
       ) {
          Text(
             text = "Panel Monitoring",
-            style = textStyle,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF1A237E),
-            modifier = Modifier.padding(bottom = 16.dp)
+            fontFamily = FontFamily(
+               Font(R.font.poppins_semibold)
+            ),
+            color = HighlightYellow,
+            modifier = Modifier.padding(bottom = 24.dp),
+            fontSize = 28.sp
          )
 
          Column (
@@ -183,29 +324,28 @@ fun PanelMonitoring(modifier: Modifier = Modifier){
             }
          }
       }
-//      Card (
-//         modifier = modifier.fillMaxWidth(),
-//         shape = RoundedCornerShape(12.dp),
-//         colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF2F5)),
-//         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-//      ){
-//
-//      }
    }
 }
 
 @Composable
-fun PanelPump(modifier: Modifier = Modifier){
-   Card (
-      modifier = modifier,
-      shape = RoundedCornerShape(12.dp),
-      elevation = CardDefaults.cardElevation(4.dp)
-   ){
-      Box(
-         modifier = modifier.fillMaxWidth(),
-         contentAlignment = Alignment.Center
-      ){
-         ButtonComponent(text = "Pump")
-      }
+fun CardStatus(
+   modifier: Modifier = Modifier
+){
+   Card(
+      modifier = modifier
+         .fillMaxWidth()
+         .border(2.dp, ArmyOlive, RoundedCornerShape(8.dp))
+         .background(CardSurface, shape = RoundedCornerShape(8.dp)),
+      colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+
+   ) {
+      Text(
+         text = "Status",
+         modifier = Modifier.padding(16.dp),
+         fontFamily = FontFamily(
+            Font(R.font.poppins_semibold)),
+         fontSize = 20.sp,
+         color = HighlightYellow
+      )
    }
 }
